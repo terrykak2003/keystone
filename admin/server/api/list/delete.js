@@ -38,6 +38,11 @@ module.exports = function (req, res) {
 			return res.apiError('database error', err);
 		}
 		async.forEachLimit(results, 10, function (item, next) {
+			/* Track plugin support */
+			// If the track plugin is enabled for the list, it looks for ._req_user to
+			// detect the user that performed the updated. 
+			item._req_user = req.user;
+			
 			item.remove(function (err) {
 				if (err) return next(err);
 				deletedCount++;
