@@ -13,16 +13,44 @@ module.exports = function IndexRoute (req, res) {
 
 	var UserList = keystone.list(keystone.get('user model'));
 
-	var orphanedLists = keystone.getOrphanedLists().map(function (list) {
-		return _.pick(list, ['key', 'label', 'path']);
-	});
-
 	var backUrl = keystone.get('back url');
 	if (backUrl === undefined) {
 		// backUrl can be falsy, to disable the link altogether
 		// but if it's undefined, default it to "/"
 		backUrl = '/';
 	}
+
+	if (keystone.get('rbac')) {
+		keystone.nav = keystone.initNav(keystone.get('nav'), req.user.role);
+		Object.keys(lists).forEach(key => {
+			const listKey = lists[key].key;
+			switch (req.user.role[listKey]) {
+				// view-only
+				case 1: {
+					lists[key].noedit = true;
+					lists[key].nocreate = true;
+					lists[key].nodelete = true;
+					break;
+				}
+				// no permission
+				case 0: {
+					// User list is used in admin client and cannot be deleted
+					if (listKey === UserList.key) {
+						lists[key].hidden = true;
+					} else {
+						delete lists[key];
+					}
+				}
+			}
+		});
+	}
+
+	/**
+	 * orphanedLists depends on keystone.nav. call it after rbac config
+	 */
+	var orphanedLists = keystone.getOrphanedLists(req.user.role).map(function (list) {
+		return _.pick(list, ['key', 'label', 'path']);
+	});
 
 	var keystoneData = {
 		adminPath: '/' + keystone.get('admin path'),

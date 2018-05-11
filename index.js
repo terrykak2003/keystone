@@ -126,6 +126,7 @@ Keystone.prototype.redirect = require('./lib/core/redirect');
 Keystone.prototype.start = require('./lib/core/start');
 Keystone.prototype.wrapHTMLError = require('./lib/core/wrapHTMLError');
 Keystone.prototype.createKeystoneHash = require('./lib/core/createKeystoneHash');
+Keystone.prototype.createRoleModel = require('./lib/core/createRoleModel');
 
 /* Deprecation / Change warnings for 0.4 */
 Keystone.prototype.routes = function () {

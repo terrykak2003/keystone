@@ -87,7 +87,10 @@ module.exports = Field.create({
 	},
 
 	cacheItem (item) {
-		item.href = Keystone.adminPath + '/' + this.props.refList.path + '/' + item.id;
+		const keystoneList = listsByKey[this.props.refList.key];
+		if (keystoneList && !keystoneList.hidden) {
+			item.href = Keystone.adminPath + '/' + this.props.refList.path + '/' + item.id;
+		}
 		this._itemsCache[item.id] = item;
 	},
 
@@ -238,7 +241,7 @@ module.exports = Field.create({
 		const { value } = this.state;
 		const props = {
 			children: value ? value.name : null,
-			component: value ? 'a' : 'span',
+			component: value && value.href ? 'a' : 'span',
 			href: value ? value.href : null,
 			noedit: true,
 		};

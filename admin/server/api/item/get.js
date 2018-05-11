@@ -25,6 +25,10 @@ module.exports = function (req, res) {
 		var tasks = [];
 		var drilldown;
 
+		if (req.query.basic === '' || req.query.basic === 'true') {
+			return res.json(req.list.getBasicData(item));
+		}
+
 		/* Drilldown (optional, provided if ?drilldown=true in querystring) */
 		if (req.query.drilldown === 'true' && req.list.get('drilldown')) {
 			drilldown = {
